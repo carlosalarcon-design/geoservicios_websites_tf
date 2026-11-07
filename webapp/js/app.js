@@ -19,7 +19,7 @@ const departamentosWMS = L.tileLayer.wms(geoserverUrl, {
 }).addTo(map);
 
 // URL del servicio WFS
-const departamentosWFSUrl='/datos/departamentos.geojson'//RL de tu servicio WFS
+const departamentosWFSUrl='datos/departamentos.geojson'//RL de tu servicio WFS
 let departamentosGeoJSON; // Variable para almacenar la capa GeoJSON
 
 // Cargar y mostrar departamentos como GeoJSON
@@ -66,7 +66,7 @@ const baseMaps = {
 // Capas superpuestas
 const overlayMaps = {
     "Departamentos": departamentosWMS,
-    /*"Departamentos (WFS)": departamentosGeoJSON, */
+    //"Departamentos(WFS)": departamentosGeoJSON,
     "Municipios": municipiosWMS
 };
 
