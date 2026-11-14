@@ -11,7 +11,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const geoserverUrl = 'https://geoportal.dane.gov.co/mparcgis/services/MGN2024/Serv_CapasMGN_2024/MapServer/WMSServer';
 
 // Código DANE del departamento a mostrar: La Guajira
-const GUAJIRA_CCDGO = '81';
+const Dpto_CCDGO = '81';
 
 // Agregar capa WMS de departamentos
 // Nota: el servicio es un ArcGIS MapServer WMS y no admite filtros por atributo (CQL),
@@ -33,7 +33,7 @@ fetch(departamentosWFSUrl)
     .then(data => {
         // Crear capa GeoJSON (solo La Guajira)
         departamentosGeoJSON = L.geoJSON(data, {
-            filter: feature => feature.properties.dpto_ccdgo === GUAJIRA_CCDGO,
+            filter: feature => feature.properties.dpto_ccdgo === Dpto_CCDGO,
             style: {
                 color: '#232323',
                 weight: 2,
@@ -48,15 +48,15 @@ fetch(departamentosWFSUrl)
         controlLayer.addOverlay(departamentosGeoJSON, "Departamentos (WFS)"); // Agregar al control de capas
 
         // Extensión de La Guajira
-        const guajiraBounds = departamentosGeoJSON.getBounds();
+        const DptoBounds = departamentosGeoJSON.getBounds();
 
         // Restringir las teselas de ambos WMS a la extensión de La Guajira
-        departamentosWMS.options.bounds = guajiraBounds;
+        departamentosWMS.options.bounds = DptoBounds;
         departamentosWMS.redraw();
-        municipiosWMS.options.bounds = guajiraBounds;
+        municipiosWMS.options.bounds = DptoBounds;
 
         // Centrar la vista en el departamento de La Guajira
-        map.fitBounds(guajiraBounds);
+        map.fitBounds(DptoBounds);
     })
     .catch(error => console.error('Error cargando WFS:', error));
 
@@ -94,14 +94,14 @@ baseMaps["OpenStreetMap"].addTo(map);
 
 // ============================================================
 // Capas detalladas de La Guajira (cartografía base IGAC/DANE)
-// Datos recortados por departamento en datos/44_LA_GUAJIRA/.
+// Datos recortados por departamento /.
 // Se cargan de forma diferida (lazy): solo se descarga el GeoJSON
 // cuando el usuario activa la capa en el control, porque algunas
 // (Drenaje, Curvas de Nivel, Vías) pesan varios MB.
 // ============================================================
-const guajiraDataDir = 'https://epiragauta.github.io/geoservicios_y_websites/webapp/datos/94_GUAINÍA/';
+const DptoDataDir = 'https://epiragauta.github.io/geoservicios_y_websites/webapp/datos/81_ARAUCA/';
 
-const capasGuajira = [
+const capasDpto = [
     {
         file: 'Administrativo_P.geojson', label: 'Topónimos administrativos',
         tipo: 'punto', color: '#c62828', radio: 4
@@ -137,7 +137,7 @@ const capasGuajira = [
 ];
 
 // Construye el contenido del popup a partir de los atributos más relevantes
-function popupGuajira(props) {
+function popupDpto(props) {
     const campos = [
         ['NOMBRE_GEO', 'Nombre'],
         ['TIPO_VIA', 'Tipo de vía'],
@@ -155,8 +155,8 @@ function popupGuajira(props) {
 }
 
 // Carga (una sola vez) el GeoJSON de una capa dentro de su layerGroup
-function cargarCapaGuajira(cfg) {
-    fetch(guajiraDataDir + cfg.file)
+function cargarCapaDpto(cfg) {
+    fetch(DptoDataDir + cfg.file)
         .then(response => response.json())
         .then(data => {
             const capa = L.geoJSON(data, {
@@ -180,7 +180,7 @@ function cargarCapaGuajira(cfg) {
 }
 
 // Registrar cada capa como overlay con carga diferida
-capasGuajira.forEach(cfg => {
+capasDpto.forEach(cfg => {
     cfg._group = L.layerGroup();
     cfg._loaded = false;
     controlLayer.addOverlay(cfg._group, cfg.label);
@@ -188,7 +188,7 @@ capasGuajira.forEach(cfg => {
 
 // Al activar una capa por primera vez, descargar su GeoJSON
 map.on('overlayadd', function (e) {
-    const cfg = capasGuajira.find(c => c._group === e.layer);
+    const cfg = capasDpto.find(c => c._group === e.layer);
     if (cfg && !cfg._loaded) {
         cfg._loaded = true;
         cargarCapaGuajira(cfg);
@@ -253,7 +253,7 @@ const info = L.control({position: 'topleft'});
 info.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info');
     this._div.innerHTML = `
-        <h4>La Guajira - Servicios Geográficos</h4>
+        <h4>Departamento - Servicios Geográficos</h4>
         <p>Visualización del departamento y sus municipios</p>
         <p><small>Datos: DANE | Servidor: GeoServer</small></p>
     `;
@@ -308,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Marcador de Riohacha (capital de La Guajira)
+// Marcador de Riohacha (capital de Dpto)
 const araucaMarker = L.marker([ 7.08471, -70.75908])
     .addTo(map)
-    .bindPopup('<b>Riohacha</b><br>Capital de La Guajira');
+    .bindPopup('<b>Arauca</b><br>Capital');
