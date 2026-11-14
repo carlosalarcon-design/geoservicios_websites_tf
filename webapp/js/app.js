@@ -93,7 +93,7 @@ const controlLayer = L.control.layers(baseMaps, overlayMaps, {
 baseMaps["OpenStreetMap"].addTo(map);
 
 // ============================================================
-// Capas detalladas de La Guajira (cartografía base IGAC/DANE)
+// Capas detalladas de los departamentos (cartografía base IGAC/DANE)
 // Datos recortados por departamento /.
 // Se cargan de forma diferida (lazy): solo se descarga el GeoJSON
 // cuando el usuario activa la capa en el control, porque algunas
