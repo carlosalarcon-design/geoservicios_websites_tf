@@ -98,7 +98,8 @@ baseMaps["OpenStreetMap"].addTo(map);
 // cuando el usuario activa la capa en el control, porque algunas
 // (Drenaje, Curvas de Nivel, Vías) pesan varios MB.
 // ============================================================
-const araucaDataDir = 'https://epiragauta.github.io/geoservicios_y_websites/webapp/datos/81_ARAUCA/';
+//const araucaDataDir = 'https://epiragauta.github.io/geoservicios_y_websites/webapp/datos/81_ARAUCA/';
+const araucaDataDir= 'https://github.com/carlosalarcon-design/geoservicios_websites_tf/webapp/datos/81_ARAUCA/';
 
 const capasarauca = [
     {
