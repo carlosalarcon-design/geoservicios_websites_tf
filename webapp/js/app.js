@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const searchText = searchInput.value.trim().toLowerCase();
         if (!searchText || !departamentosGeoJSON) return;
 
-        let encontrado = null;
+        let encontrado = null;  
         departamentosGeoJSON.eachLayer(function(layer) {
             const nombre = layer.feature.properties.dpto_cnmbr.toLowerCase();
             if (!encontrado && nombre.includes(searchText)) {
