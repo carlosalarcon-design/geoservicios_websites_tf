@@ -99,7 +99,7 @@ baseMaps["OpenStreetMap"].addTo(map);
 // cuando el usuario activa la capa en el control, porque algunas
 // (Drenaje, Curvas de Nivel, Vías) pesan varios MB.
 // ============================================================
-const DptoDataDir = 'https://github.com/carlosalarcon-design/geoservicios_websites_tf/tree/main/webapp/datos/94_Guainía/';
+const DptoDataDir = 'https://github.com/carlosalarcon-design/geoservicios_websites_tf/tree/main/webapp/datos/94_GUAINÍA/';
 
 const capasDpto = [
     {
