@@ -1,5 +1,5 @@
-// Crear el mapa centrado en Colombia
-const map = L.map('map').setView([4.5709, -74.2973], 6);
+// Crear el mapa centrado en el departamento de La Guajira
+const map = L.map('map').setView([11.35, -72.5], 8);
 
 // Agregar capa base de OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -10,12 +10,17 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // URL del servicio WMS de GeoServer
 const geoserverUrl = 'https://geoportal.dane.gov.co/mparcgis/services/MGN2024/Serv_CapasMGN_2024/MapServer/WMSServer';
 
+// Código DANE del departamento a mostrar: La Guajira
+const GUAINIA_CCDGO = '94';
+
 // Agregar capa WMS de departamentos
+// Nota: el servicio es un ArcGIS MapServer WMS y no admite filtros por atributo (CQL),
+// por lo que se restringe la carga de teselas a la extensión de La Guajira mediante 'bounds'.
 const departamentosWMS = L.tileLayer.wms(geoserverUrl, {
     layers: '8',
     format: 'image/png',
     transparent: true,
-    attribution: 'Departamento Administrativo Nacional de Estadística - DANE'
+    attribution: 'DANE - Departamento Administrativo Nacional de Estadística'
 }).addTo(map);
 
 // URL del servicio WFS
@@ -26,23 +31,32 @@ let departamentosGeoJSON; // Variable para almacenar la capa GeoJSON
 fetch(departamentosWFSUrl)
     .then(response => response.json())
     .then(data => {
-        // Crear capa GeoJSON
+        // Crear capa GeoJSON (solo La Guajira)
         departamentosGeoJSON = L.geoJSON(data, {
+            filter: feature => feature.properties.dpto_ccdgo === GUAJIRA_CCDGO,
             style: {
-                color: '#e82525',
+                color: '#020512',
                 weight: 2,
-                fillColor: '#1fd072',
+                fillColor: '#dc9822',
                 fillOpacity: 0.5
             },
             onEachFeature: onEachFeature
         });
 
         // Agregar al mapa
-        departamentosGeoJSON.addTo(map);        
+        departamentosGeoJSON.addTo(map);
         controlLayer.addOverlay(departamentosGeoJSON, "Departamentos (WFS)"); // Agregar al control de capas
 
-        // Ajustar vista al extent de los datos
-        map.fitBounds(departamentosGeoJSON.getBounds());
+        // Extensión de guainia
+        const guainiaBounds = departamentosGeoJSON.getBounds();
+
+        // Restringir las teselas de ambos WMS a la extensión de La Guajira
+        departamentosWMS.options.bounds = guainiaBounds;
+        departamentosWMS.redraw();
+        municipiosWMS.options.bounds = guainiaBounds;
+
+        // Centrar la vista en el departamento de guainia
+        map.fitBounds(guainiaBounds);
     })
     .catch(error => console.error('Error cargando WFS:', error));
 
@@ -51,7 +65,7 @@ const municipiosWMS = L.tileLayer.wms(geoserverUrl, {
     layers: '7',
     format: 'image/png',
     transparent: true,
-    attribution: 'Departamento Administrativo Nacional de Estadística - DANE'
+    attribution: 'DANE - Departamento Administrativo Nacional de Estadística'
 });
 
 // Capas base
@@ -82,8 +96,10 @@ function onEachFeature(feature, layer) {
     // Popup al hacer clic
     if (feature.properties) {
         const popupContent = `
-            <strong>${feature.properties.dpto_cnmbr}</strong><br>
-            Código: ${feature.properties.dpto_ccdgo}
+            <div style="text-align: center;">
+                <h3>${feature.properties.dpto_cnmbr}</h3>
+                <p><strong>Código:</strong> ${feature.properties.dpto_ccdgo}</p>
+            </div>
         `;
         layer.bindPopup(popupContent);
     }
@@ -112,7 +128,7 @@ function resetHighlight(e) {
     const layer = e.target;
     layer.setStyle({
         weight: 2,
-        color: '#05161e',
+        color: '#232323',
         fillOpacity: 0.5
     });
 }
@@ -134,8 +150,8 @@ const info = L.control({position: 'topleft'});
 info.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info');
     this._div.innerHTML = `
-        <h4>Colombia - Servicios Geográficos</h4>
-        <p>Visualización de departamentos y municipios</p>
+        <h4>La Guajira - Servicios Geográficos</h4>
+        <p>Visualización del departamento y sus municipios</p>
         <p><small>Datos: DANE | Servidor: GeoServer</small></p>
     `;
     return this._div;
@@ -189,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Marcador de Bogotá
-const bogotaMarker = L.marker([4.7110, -74.0721])
-    .addTo(map)
-    .bindPopup('<b>Bogotá D.C.</b><br>Capital de Colombia');
+// Marcador de Riohacha (capital de La Guajira)
+//const riohachaMarker = L.marker([11.5444, -72.9072])
+//    .addTo(map)
+//    .bindPopup('<b>Riohacha</b><br>Capital de La Guajira');
