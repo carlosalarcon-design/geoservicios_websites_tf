@@ -51,7 +51,7 @@ const municipiosWMS = L.tileLayer.wms(geoserverUrl, {
     layers: '7',
     format: 'image/png',
     transparent: true,
-    attribution: 'IGAC'
+    attribution: 'DANE'
 });
 
 // Capas base
