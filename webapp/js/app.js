@@ -15,7 +15,7 @@ const departamentosWMS = L.tileLayer.wms(geoserverUrl, {
     layers: '8',
     format: 'image/png',
     transparent: true,
-    attribution: 'DANE'
+    attribution: 'Departamento Administrativo Nacional de Estadística - DANE'
 }).addTo(map);
 
 // URL del servicio WFS
@@ -29,9 +29,9 @@ fetch(departamentosWFSUrl)
         // Crear capa GeoJSON
         departamentosGeoJSON = L.geoJSON(data, {
             style: {
-                color: '#232323',
+                color: '#e82525',
                 weight: 2,
-                fillColor: '#e8f881',
+                fillColor: '#1fd072',
                 fillOpacity: 0.5
             },
             onEachFeature: onEachFeature
@@ -51,7 +51,7 @@ const municipiosWMS = L.tileLayer.wms(geoserverUrl, {
     layers: '7',
     format: 'image/png',
     transparent: true,
-    attribution: 'DANE'
+    attribution: 'Departamento Administrativo Nacional de Estadística - DANE'
 });
 
 // Capas base
@@ -112,7 +112,7 @@ function resetHighlight(e) {
     const layer = e.target;
     layer.setStyle({
         weight: 2,
-        color: '#232323',
+        color: '#05161e',
         fillOpacity: 0.5
     });
 }
@@ -120,3 +120,76 @@ function resetHighlight(e) {
 function zoomToFeature(e) {
     map.fitBounds(e.target.getBounds());
 }
+
+// Control de escala
+L.control.scale({
+    position: 'bottomleft',
+    metric: true,
+    imperial: false
+}).addTo(map);
+
+// Panel de información
+const info = L.control({position: 'topleft'});
+
+info.onAdd = function (map) {
+    this._div = L.DomUtil.create('div', 'info');
+    this._div.innerHTML = `
+        <h4>Colombia - Servicios Geográficos</h4>
+        <p>Visualización de departamentos y municipios</p>
+        <p><small>Datos: DANE | Servidor: GeoServer</small></p>
+    `;
+    return this._div;
+};
+
+info.addTo(map);
+
+// Crear control de búsqueda
+const searchControl = L.control({position: 'topright'});
+
+searchControl.onAdd = function (map) {
+    const div = L.DomUtil.create('div', 'search-control');
+    div.innerHTML = `
+        <input type="text" id="search-input" placeholder="Buscar departamento...">
+        <button id="search-button">Buscar</button>
+    `;
+    L.DomEvent.disableClickPropagation(div);
+    return div;
+};
+
+searchControl.addTo(map);
+
+// Función de búsqueda
+document.addEventListener('DOMContentLoaded', function() {
+    const searchButton = document.getElementById('search-button');
+    const searchInput = document.getElementById('search-input');
+
+    function buscar() {
+        const searchText = searchInput.value.trim().toLowerCase();
+        if (!searchText || !departamentosGeoJSON) return;
+
+        let encontrado = null;
+        departamentosGeoJSON.eachLayer(function(layer) {
+            const nombre = layer.feature.properties.dpto_cnmbr.toLowerCase();
+            if (!encontrado && nombre.includes(searchText)) {
+                encontrado = layer;
+            }
+        });
+
+        if (encontrado) {
+            map.fitBounds(encontrado.getBounds());
+            encontrado.openPopup();
+        } else {
+            alert('No se encontró el departamento: ' + searchInput.value);
+        }
+    }
+
+    searchButton.addEventListener('click', buscar);
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') buscar();
+    });
+});
+
+// Marcador de Bogotá
+const bogotaMarker = L.marker([4.7110, -74.0721])
+    .addTo(map)
+    .bindPopup('<b>Bogotá D.C.</b><br>Capital de Colombia');
