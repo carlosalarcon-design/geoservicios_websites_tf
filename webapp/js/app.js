@@ -11,7 +11,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const geoserverUrl = 'https://geoportal.dane.gov.co/mparcgis/services/MGN2024/Serv_CapasMGN_2024/MapServer/WMSServer';
 
 // Código DANE del departamento a mostrar: La Guajira
-const GUAJIRA_CCDGO = '94';
+const GUAJIRA_CCDGO = '97';
 
 // Agregar capa WMS de departamentos
 // Nota: el servicio es un ArcGIS MapServer WMS y no admite filtros por atributo (CQL),
@@ -99,7 +99,7 @@ baseMaps["OpenStreetMap"].addTo(map);
 // cuando el usuario activa la capa en el control, porque algunas
 // (Drenaje, Curvas de Nivel, Vías) pesan varios MB.
 // ============================================================
-const guajiraDataDir = 'https://epiragauta.github.io/geoservicios_y_websites/webapp/datos/94_GUAINÍA/';
+const guajiraDataDir = 'https://epiragauta.github.io/geoservicios_y_websites/webapp/datos/97_VAUPÉS/';
 
 const capasGuajira = [
     {
