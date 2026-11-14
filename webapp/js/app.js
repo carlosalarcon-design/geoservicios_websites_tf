@@ -1,4 +1,4 @@
-// Crear el mapa centrado en el departamento de La Guajira
+// Crear el mapa centrado en el departamento de Arauca
 const map = L.map('map').setView([11.35, -72.5], 8);
 
 // Agregar capa base de OpenStreetMap
@@ -10,12 +10,12 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // URL del servicio WMS de GeoServer
 const geoserverUrl = 'https://geoportal.dane.gov.co/mparcgis/services/MGN2024/Serv_CapasMGN_2024/MapServer/WMSServer';
 
-// Código DANE del departamento a mostrar: La Guajira
-const Dpto_CCDGO = '81';
+// Código DANE del departamento a mostrar: Arauca
+const ARAUCA_CCDGO = '81';
 
 // Agregar capa WMS de departamentos
 // Nota: el servicio es un ArcGIS MapServer WMS y no admite filtros por atributo (CQL),
-// por lo que se restringe la carga de teselas a la extensión 'bounds'.
+// por lo que se restringe la carga de teselas a la extensión de Arauca mediante 'bounds'.
 const departamentosWMS = L.tileLayer.wms(geoserverUrl, {
     layers: '8',
     format: 'image/png',
@@ -31,9 +31,9 @@ let departamentosGeoJSON; // Variable para almacenar la capa GeoJSON
 fetch(departamentosWFSUrl)
     .then(response => response.json())
     .then(data => {
-        // Crear capa GeoJSON 
+        // Crear capa GeoJSON (solo Arauca)
         departamentosGeoJSON = L.geoJSON(data, {
-            filter: feature => feature.properties.dpto_ccdgo === Dpto_CCDGO,
+            filter: feature => feature.properties.dpto_ccdgo === ARAUCA_CCDGO,
             style: {
                 color: '#232323',
                 weight: 2,
@@ -47,16 +47,16 @@ fetch(departamentosWFSUrl)
         departamentosGeoJSON.addTo(map);
         controlLayer.addOverlay(departamentosGeoJSON, "Departamentos (WFS)"); // Agregar al control de capas
 
-        // Extensión
-        const DptoBounds = departamentosGeoJSON.getBounds();
+        // Extensión de Arauca
+        const araucaBounds = departamentosGeoJSON.getBounds();
 
-        // Restringir las teselas de ambos WMS a la extensión de La Guajira
-        departamentosWMS.options.bounds = DptoBounds;
+        // Restringir las teselas de ambos WMS a la extensión de Arauca
+        departamentosWMS.options.bounds = araucaBounds;
         departamentosWMS.redraw();
-        municipiosWMS.options.bounds = DptoBounds;
+        municipiosWMS.options.bounds = araucaBounds;
 
-        // Centrar la vista en el departamento de La Guajira
-        map.fitBounds(DptoBounds);
+        // Centrar la vista en el departamento de Arauca
+        map.fitBounds(araucaBounds);
     })
     .catch(error => console.error('Error cargando WFS:', error));
 
@@ -93,15 +93,14 @@ const controlLayer = L.control.layers(baseMaps, overlayMaps, {
 baseMaps["OpenStreetMap"].addTo(map);
 
 // ============================================================
-// Capas detalladas de los departamentos (cartografía base IGAC/DANE)
-// Datos recortados por departamento /.
+// Capas detalladas de Arauca (cartografía base IGAC/DANE)
 // Se cargan de forma diferida (lazy): solo se descarga el GeoJSON
 // cuando el usuario activa la capa en el control, porque algunas
 // (Drenaje, Curvas de Nivel, Vías) pesan varios MB.
 // ============================================================
-const DptoDataDir = 'https://github.com/carlosalarcon-design/geoservicios_websites_tf/tree/main/webapp/datos/81_ARAUCA/';
+const araucaDataDir = 'https://epiragauta.github.io/geoservicios_y_websites/webapp/datos/81_ARAUCA/';
 
-const capasDpto = [
+const capasarauca = [
     {
         file: 'Administrativo_P.geojson', label: 'Topónimos administrativos',
         tipo: 'punto', color: '#c62828', radio: 4
@@ -137,7 +136,7 @@ const capasDpto = [
 ];
 
 // Construye el contenido del popup a partir de los atributos más relevantes
-function popupDpto(props) {
+function popupArauca(props) {
     const campos = [
         ['NOMBRE_GEO', 'Nombre'],
         ['TIPO_VIA', 'Tipo de vía'],
@@ -155,8 +154,8 @@ function popupDpto(props) {
 }
 
 // Carga (una sola vez) el GeoJSON de una capa dentro de su layerGroup
-function cargarCapaDpto(cfg) {
-    fetch(DptoDataDir + cfg.file)
+function cargarCapaArauca(cfg) {
+    fetch(araucaDataDir + cfg.file)
         .then(response => response.json())
         .then(data => {
             const capa = L.geoJSON(data, {
@@ -170,7 +169,7 @@ function cargarCapaDpto(cfg) {
                 }),
                 onEachFeature: (feature, layer) => {
                     if (feature.properties) {
-                        layer.bindPopup(popupGuajira(feature.properties));
+                        layer.bindPopup(popupArauca(feature.properties));
                     }
                 }
             });
@@ -180,7 +179,7 @@ function cargarCapaDpto(cfg) {
 }
 
 // Registrar cada capa como overlay con carga diferida
-capasDpto.forEach(cfg => {
+capasarauca.forEach(cfg => {
     cfg._group = L.layerGroup();
     cfg._loaded = false;
     controlLayer.addOverlay(cfg._group, cfg.label);
@@ -188,10 +187,10 @@ capasDpto.forEach(cfg => {
 
 // Al activar una capa por primera vez, descargar su GeoJSON
 map.on('overlayadd', function (e) {
-    const cfg = capasDpto.find(c => c._group === e.layer);
+    const cfg = capasarauca.find(c => c._group === e.layer);
     if (cfg && !cfg._loaded) {
         cfg._loaded = true;
-        cargarCapaGuajira(cfg);
+        cargarCapaArauca(cfg);
     }
 });
 
@@ -253,7 +252,7 @@ const info = L.control({position: 'topleft'});
 info.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info');
     this._div.innerHTML = `
-        <h4>Departamento - Servicios Geográficos</h4>
+        <h4>Arauca - Servicios Geográficos</h4>
         <p>Visualización del departamento y sus municipios</p>
         <p><small>Datos: DANE | Servidor: GeoServer</small></p>
     `;
@@ -308,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Marcador de Riohacha (capital de Dpto)
-const araucaMarker = L.marker([ 7.08471, -70.75908])
+// Marcador de Riohacha (capital de Arauca)
+const riohachaMarker = L.marker([11.5444, -72.9072])
     .addTo(map)
-    .bindPopup('<b>Arauca</b><br>Capital');
+    .bindPopup('<b>Riohacha</b><br>Capital de Arauca');
