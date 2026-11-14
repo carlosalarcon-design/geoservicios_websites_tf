@@ -20,7 +20,7 @@ const departamentosWMS = L.tileLayer.wms(geoserverUrl, {
     layers: '8',
     format: 'image/png',
     transparent: true,
-    attribution: 'DANE - Departamento Administrativo Nacional de Estadística'
+    attribution: 'Departamento Administrativo Nacional de Estadística - DANE'
 }).addTo(map);
 
 // URL del servicio WFS
@@ -33,11 +33,11 @@ fetch(departamentosWFSUrl)
     .then(data => {
         // Crear capa GeoJSON (solo La Guajira)
         departamentosGeoJSON = L.geoJSON(data, {
-            filter: feature => feature.properties.dpto_ccdgo === GUAJIRA_CCDGO,
+            filter: feature => feature.properties.dpto_ccdgo === GUAINIA_CCDGO,
             style: {
-                color: '#020512',
+                color: '#922f46',
                 weight: 2,
-                fillColor: '#dc9822',
+                fillColor: '#0db4b1',
                 fillOpacity: 0.5
             },
             onEachFeature: onEachFeature
@@ -47,15 +47,15 @@ fetch(departamentosWFSUrl)
         departamentosGeoJSON.addTo(map);
         controlLayer.addOverlay(departamentosGeoJSON, "Departamentos (WFS)"); // Agregar al control de capas
 
-        // Extensión de guainia
+        // Extensión de La Guainia
         const guainiaBounds = departamentosGeoJSON.getBounds();
 
-        // Restringir las teselas de ambos WMS a la extensión de La Guajira
+        // Restringir las teselas de ambos WMS a la extensión de La Guainia
         departamentosWMS.options.bounds = guainiaBounds;
         departamentosWMS.redraw();
         municipiosWMS.options.bounds = guainiaBounds;
 
-        // Centrar la vista en el departamento de guainia
+        // Centrar la vista en el departamento de La Guajira
         map.fitBounds(guainiaBounds);
     })
     .catch(error => console.error('Error cargando WFS:', error));
@@ -65,7 +65,7 @@ const municipiosWMS = L.tileLayer.wms(geoserverUrl, {
     layers: '7',
     format: 'image/png',
     transparent: true,
-    attribution: 'DANE - Departamento Administrativo Nacional de Estadística'
+    attribution: 'Departamento Administrativo Nacional de Estadística - DANE'
 });
 
 // Capas base
@@ -128,7 +128,7 @@ function resetHighlight(e) {
     const layer = e.target;
     layer.setStyle({
         weight: 2,
-        color: '#232323',
+        color: '#390b38',
         fillOpacity: 0.5
     });
 }
@@ -150,7 +150,7 @@ const info = L.control({position: 'topleft'});
 info.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info');
     this._div.innerHTML = `
-        <h4>La Guajira - Servicios Geográficos</h4>
+        <h4>Guainía - "Tierra de muchas aguas"</h4>
         <p>Visualización del departamento y sus municipios</p>
         <p><small>Datos: DANE | Servidor: GeoServer</small></p>
     `;
@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Marcador de Riohacha (capital de La Guajira)
-//const riohachaMarker = L.marker([11.5444, -72.9072])
-//    .addTo(map)
-//    .bindPopup('<b>Riohacha</b><br>Capital de La Guajira');
+// Marcador de Inirida (capital del Guainía)
+const iniridaMarker = L.marker([3.86528, -67.92389])
+    .addTo(map)
+    .bindPopup('<b>Inirida</b><br>Capital del Guainía');
