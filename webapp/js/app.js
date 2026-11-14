@@ -1,26 +1,21 @@
-// Crear el mapa centrado en el departamento de La Guajira
-const map = L.map('map').setView([11.35, -72.5], 8);
+// Crear el mapa centrado en Colombia
+const map = L.map('map').setView([4.5709, -74.2973], 6);
 
-// Agregar capa base de OpenStreetMap  
+// Agregar capa base de OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom: 19
 }).addTo(map);
 
-// URL del servicio WMS de GeoServer  
+// URL del servicio WMS de GeoServer
 const geoserverUrl = 'https://geoportal.dane.gov.co/mparcgis/services/MGN2024/Serv_CapasMGN_2024/MapServer/WMSServer';
 
-// Código DANE del departamento a mostrar: Guainía
-const GUAINIA_CCDGO = '94';
-
 // Agregar capa WMS de departamentos
-// Nota: el servicio es un ArcGIS MapServer WMS y no admite filtros por atributo (CQL),
-// por lo que se restringe la carga de teselas a la extensión de La Guajira mediante 'bounds'.
 const departamentosWMS = L.tileLayer.wms(geoserverUrl, {
     layers: '8',
     format: 'image/png',
     transparent: true,
-    attribution: 'Departamento Administrativo Nacional de Estadística - DANE'
+    attribution: 'DANE - Departamento Administrativo Nacional de Estadística'
 }).addTo(map);
 
 // URL del servicio WFS
@@ -31,32 +26,23 @@ let departamentosGeoJSON; // Variable para almacenar la capa GeoJSON
 fetch(departamentosWFSUrl)
     .then(response => response.json())
     .then(data => {
-        // Crear capa GeoJSON (solo La Guajira)
+        // Crear capa GeoJSON
         departamentosGeoJSON = L.geoJSON(data, {
-            filter: feature => feature.properties.dpto_ccdgo === GUAINIA_CCDGO,
             style: {
-                color: '#922f46',
+                color: '#232323',
                 weight: 2,
-                fillColor: '#0db4b1',
+                fillColor: '#e8f881',
                 fillOpacity: 0.5
             },
             onEachFeature: onEachFeature
         });
 
         // Agregar al mapa
-        departamentosGeoJSON.addTo(map);
+        departamentosGeoJSON.addTo(map);        
         controlLayer.addOverlay(departamentosGeoJSON, "Departamentos (WFS)"); // Agregar al control de capas
 
-        // Extensión de La Guainia
-        const guainiaBounds = departamentosGeoJSON.getBounds();
-
-        // Restringir las teselas de ambos WMS a la extensión de La Guainia
-        departamentosWMS.options.bounds = guainiaBounds;
-        departamentosWMS.redraw();
-        municipiosWMS.options.bounds = guainiaBounds;
-
-        // Centrar la vista en el departamento de La Guajira
-        map.fitBounds(guainiaBounds);
+        // Ajustar vista al extent de los datos
+        map.fitBounds(departamentosGeoJSON.getBounds());
     })
     .catch(error => console.error('Error cargando WFS:', error));
 
@@ -65,7 +51,7 @@ const municipiosWMS = L.tileLayer.wms(geoserverUrl, {
     layers: '7',
     format: 'image/png',
     transparent: true,
-    attribution: 'Departamento Administrativo Nacional de Estadística - DANE'
+    attribution: 'DANE - Departamento Administrativo Nacional de Estadística'
 });
 
 // Capas base
@@ -128,7 +114,7 @@ function resetHighlight(e) {
     const layer = e.target;
     layer.setStyle({
         weight: 2,
-        color: '#390b38',
+        color: '#232323',
         fillOpacity: 0.5
     });
 }
@@ -150,8 +136,8 @@ const info = L.control({position: 'topleft'});
 info.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info');
     this._div.innerHTML = `
-        <h4>Guainía - "Tierra de muchas aguas"</h4>
-        <p>Visualización del departamento y sus municipios</p>
+        <h4>Colombia - Servicios Geográficos</h4>
+        <p>Visualización de departamentos y municipios</p>
         <p><small>Datos: DANE | Servidor: GeoServer</small></p>
     `;
     return this._div;
@@ -205,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Marcador de Inirida (capital del Guainía)
-const iniridaMarker = L.marker([3.86528, -67.92389])
+// Marcador de Bogotá
+const bogotaMarker = L.marker([4.7110, -74.0721])
     .addTo(map)
-    .bindPopup('<b>Inirida</b><br>Capital del Guainía');
+    .bindPopup('<b>Bogotá D.C.</b><br>Capital de Colombia');
