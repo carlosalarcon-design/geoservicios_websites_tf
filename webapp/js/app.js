@@ -11,7 +11,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 const geoserverUrl = 'https://geoportal.dane.gov.co/mparcgis/services/MGN2024/Serv_CapasMGN_2024/MapServer/WMSServer';
 
 // Código DANE del departamento a mostrar: La Guajira
-const Dpto_CCDGO = '94';
+const Dpto_CCDGO = '85';
 
 // Agregar capa WMS de departamentos
 // Nota: el servicio es un ArcGIS MapServer WMS y no admite filtros por atributo (CQL),
@@ -31,7 +31,7 @@ let departamentosGeoJSON; // Variable para almacenar la capa GeoJSON
 fetch(departamentosWFSUrl)
     .then(response => response.json())
     .then(data => {
-        // Crear capa GeoJSON (solo La Guajira)
+        // Crear capa GeoJSON 
         departamentosGeoJSON = L.geoJSON(data, {
             filter: feature => feature.properties.dpto_ccdgo === Dpto_CCDGO,
             style: {
@@ -47,7 +47,7 @@ fetch(departamentosWFSUrl)
         departamentosGeoJSON.addTo(map);
         controlLayer.addOverlay(departamentosGeoJSON, "Departamentos (WFS)"); // Agregar al control de capas
 
-        // Extensión de La Guajira
+        // Extensión
         const DptoBounds = departamentosGeoJSON.getBounds();
 
         // Restringir las teselas de ambos WMS a la extensión de La Guajira
@@ -99,7 +99,7 @@ baseMaps["OpenStreetMap"].addTo(map);
 // cuando el usuario activa la capa en el control, porque algunas
 // (Drenaje, Curvas de Nivel, Vías) pesan varios MB.
 // ============================================================
-const DptoDataDir = 'https://github.com/carlosalarcon-design/geoservicios_websites_tf/tree/main/webapp/datos/94_GUAINÍA/';
+const DptoDataDir = 'https://github.com/carlosalarcon-design/geoservicios_websites_tf/tree/main/webapp/datos/81_ARAUCA/';
 
 const capasDpto = [
     {
