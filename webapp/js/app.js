@@ -15,7 +15,7 @@ const departamentosWMS = L.tileLayer.wms(geoserverUrl, {
     layers: '8',
     format: 'image/png',
     transparent: true,
-    attribution: 'IGAC - Instituto Geográfico Agustín Codazzi'
+    attribution: 'DANE'
 }).addTo(map);
 
 // URL del servicio WFS
