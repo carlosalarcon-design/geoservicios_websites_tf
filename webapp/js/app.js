@@ -1,7 +1,7 @@
 // Crear el mapa centrado en el departamento de La Guajira
 const map = L.map('map').setView([11.35, -72.5], 8);
 
-// Agregar capa base de OpenStreetMap
+// Agregar capa base de OpenStreetMap  
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom: 19
@@ -10,7 +10,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // URL del servicio WMS de GeoServer
 const geoserverUrl = 'https://geoportal.dane.gov.co/mparcgis/services/MGN2024/Serv_CapasMGN_2024/MapServer/WMSServer';
 
-// Código DANE del departamento a mostrar: La Guajira
+// Código DANE del departamento a mostrar: Guainía
 const GUAINIA_CCDGO = '94';
 
 // Agregar capa WMS de departamentos
