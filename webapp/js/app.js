@@ -33,9 +33,9 @@ fetch(departamentosWFSUrl)
         departamentosGeoJSON = L.geoJSON(data, {
             filter: feature => feature.properties.dpto_ccdgo === VAUPES_CCDGO,
             style: {
-                color: '#232323',
+                color: '#5f0606',
                 weight: 2,
-                fillColor: '#e8f881',
+                fillColor: '#2e4541',
                 fillOpacity: 0.5
             },
             onEachFeature: onEachFeature
@@ -107,10 +107,6 @@ const capasVaupes = [
         tipo: 'punto', color: '#6d4c41', radio: 3
     },
     {
-        file: 'Costero_Insular.geojson', label: 'Costero / insular',
-        tipo: 'punto', color: '#00838f', radio: 4
-    },
-    {
         file: 'Via.geojson', label: 'Vías',
         tipo: 'linea', estilo: { color: '#e65100', weight: 1.5 }
     },
@@ -123,12 +119,16 @@ const capasVaupes = [
         tipo: 'linea', estilo: { color: '#8d6e63', weight: 0.8 }
     },
     {
-        file: 'Laguna.geojson', label: 'Lagunas',
+        file: 'Pantano.geojson', label: 'Pantanos',
         tipo: 'poligono', estilo: { color: '#0277bd', weight: 1, fillColor: '#4fc3f7', fillOpacity: 0.5 }
     },
     {
         file: 'Bosque.geojson', label: 'Bosques',
         tipo: 'poligono', estilo: { color: '#1b5e20', weight: 1, fillColor: '#66bb6a', fillOpacity: 0.4 }
+    },
+        {
+        file: 'Raudal_Rapido.geojson', label: 'Raudales',
+        tipo: 'punto', color: '#630ecc', radio: 4
     }
 ];
 
@@ -307,4 +307,4 @@ document.addEventListener('DOMContentLoaded', function() {
 // Marcador capital departamento
 const riohachaMarker = L.marker([1.25744, -70.23551])
     .addTo(map)
-    .bindPopup('<b>Mitú</b><br>Capital de La Vaupes');
+    .bindPopup('<b>Mitú</b><br>Capital de Vaupés');
