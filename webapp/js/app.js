@@ -249,8 +249,10 @@ const info = L.control({position: 'topleft'});
 info.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info');
     this._div.innerHTML = `
-        <h4>La Vaupes - Servicios Geográficos</h4>
+        <h4>Departamento del Vaupés - Servicios Geográficos</h4>
         <p>Visualización del departamento y sus municipios</p>
+        <p>Integrantes: Carlos Alarcón - Anyi Villero</p>
+        <p>Maestría SIG 2026</p>
         <p><small>Datos: DANE | Servidor: GeoServer</small></p>
     `;
     return this._div;
@@ -305,6 +307,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Marcador capital departamento
-const riohachaMarker = L.marker([1.25744, -70.23551])
+const capitalMarker = L.marker([1.25744, -70.23551])
     .addTo(map)
     .bindPopup('<b>Mitú</b><br>Capital de Vaupés');
